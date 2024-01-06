@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +19,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <main className='bg-white flex flex-col w-screen h-screen font-mono'>
+          <Link href={"/"}>
+            <h1 className="text-3xl font-bold w-full text-center p-6">
+              Timer Ultra Max
+            </h1>
+          </Link>
+          <nav className="w-full flex justify-center items-center bg-slate-200 gap-4 p-2">
+            <Link href={"/"}><Button variant={"ghost"} className='rounded'>Timer</Button></Link>
+            <Link href={"/history"}><Button variant={"ghost"} className='rounded'>History</Button></Link>
+            <Link href={"/about"}><Button variant={"ghost"} className='rounded'>About</Button></Link>
+          </nav>
+          {children}
+        </main>
+        <Toaster />
+      </body>
     </html>
   )
 }
