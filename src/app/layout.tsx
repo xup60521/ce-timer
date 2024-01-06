@@ -20,10 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className='bg-white flex flex-col w-screen h-screen font-mono'>
+        <main className='bg-white flex flex-col w-screen h-screen'>
           <Link href={"/"}>
-            <h1 className="text-3xl font-bold w-full text-center p-6">
-              Timer Ultra Max
+            <h1 className="text-3xl font-bold font-mono w-full text-center p-6">
+              ce-Timer
             </h1>
           </Link>
           <nav className="w-full flex justify-center items-center bg-slate-200 gap-4 p-2">
