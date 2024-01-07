@@ -8,14 +8,8 @@ import {v4} from "uuid"
 
 export default function Home() {
 
-  const [timers, setTimers] = useState<TimerType[]>([
-    {
-      id: v4(),
-      name: "new timer",
-      time: 300,
-      muted: false,
-    }
-  ])
+  const [timers, setTimers] = useState<TimerType[]>([])
+  const [loading, setLoading] = useState(true)
 
   const newTimer = (event:React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -29,9 +23,35 @@ export default function Home() {
     })
   }
 
+  const saveData = () => {localStorage.setItem("timers", JSON.stringify(timers))}
+
   useEffect(()=>{
-    localStorage.setItem("timers", JSON.stringify(timers))
+    if (!loading) {
+      saveData()
+    }
   }, [timers])
+
+  useEffect(()=>{
+
+    setTimers(()=>{
+      
+        const itemString = localStorage.getItem("timers")
+        if (typeof itemString !== "string") {
+          return [
+            {
+              id: v4(),
+              name: "new timer",
+              time: 300,
+              muted: false,
+            }
+          ]
+        } 
+        return JSON.parse(itemString)
+     
+    })
+    setLoading(false)
+    
+  }, [])
 
   return (
     <div className="home flex flex-col justify-center items-center overflow-x-hidden  w-full pb-8 ">

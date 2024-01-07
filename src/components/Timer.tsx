@@ -63,7 +63,7 @@ export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
 
   return (
       <div className="timer w-64 shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] rounded-lg p-4 gap-8 flex flex-col">
-        <Input className="title text-xl border-none text-center" readOnly={action !== ""} ref={titleRef} defaultValue={"new timer"} onClick={()=>{
+        <Input className="title text-xl border-none text-center"  readOnly={action !== ""} ref={titleRef} defaultValue={name} onClick={()=>{
         if (action !== "") {return }
         titleRef.current?.select()
       }} onKeyDown={(e)=>{

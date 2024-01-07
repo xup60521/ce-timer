@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --radius: 0.25rem
-}
+
+
 
 * {
   box-sizing: border-box;
