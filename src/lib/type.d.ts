@@ -3,4 +3,9 @@ export type TimerType = {
     name: string,
     time: number,
     muted: boolean,
+    todos: {
+        id: string,
+        title: string,
+        checked: boolean
+    }[]
 }

@@ -5,13 +5,28 @@ import { Input } from "./ui/input"
 import { useToast } from "./ui/use-toast"
 import { Button } from "./ui/button"
 import type { TimerType } from "@/lib/type"
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaCheck } from "react-icons/fa";
+import { IoSettingsOutline } from "react-icons/io5";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type TimerProps = {
   setTimers: Dispatch<SetStateAction<TimerType[]>>
 } & TimerType;
 
-export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
+export const Timer = ({time, name, muted, id, setTimers, todos}:TimerProps) => {
 
   const hourRef = useRef<HTMLInputElement>(null)
   const minRef = useRef<HTMLInputElement>(null)
@@ -19,6 +34,7 @@ export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
   const titleRef = useRef<HTMLInputElement>(null)
   const [action, setAction] = useState<"" | "pause" | "running">("")
   const [remainingTime, setRemainingTime] = useState(-1)
+  const [open, setOpen] = useState(false)
   const { toast } = useToast()
 
   const deleteTimer = () => {
@@ -39,11 +55,30 @@ export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
       setAction("running")
   }
 
-  
+  const toggleMuted = () => {
+    
+    if (muted) {
+      setTimers((prev)=>{
+        const index = prev.map((d)=>d.id).indexOf(id)
+        prev[index].muted = false
+        return [...prev]  
+      })
+    } else {
+      setTimers((prev)=>{
+        const index = prev.map((d)=>d.id).indexOf(id)
+        prev[index].muted = true
+        return [...prev]  
+      })
+    }
+    
+    
+  }
   
   if (remainingTime === 0 && action === "running") {
-    const audio = new Audio("/ring.mp3")
-    audio.play()
+    if (!muted) {
+      const audio = new Audio("/ring.mp3")
+      audio.play()
+    }
     setAction("")
   }
   
@@ -62,8 +97,8 @@ export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
   
 
   return (
-      <div className="timer w-64 shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] rounded-lg p-4 gap-8 flex flex-col">
-        <Input className="title text-xl border-none text-center"  readOnly={action !== ""} ref={titleRef} defaultValue={name} onClick={()=>{
+    <div className="timer w-64 shadow-[rgba(50,50,93,0.25)_0px_6px_12px_-2px,_rgba(0,0,0,0.3)_0px_3px_7px_-3px] rounded-lg p-4 gap-8 flex flex-col items-center relative">
+      <Input className="title text-xl border-none text-center "  readOnly={action !== ""} ref={titleRef} defaultValue={name} onClick={()=>{
         if (action !== "") {return }
         titleRef.current?.select()
       }} onKeyDown={(e)=>{
@@ -91,7 +126,7 @@ export const Timer = ({time, name, muted, id, setTimers}:TimerProps) => {
       <div className="flex justify-center gap-4">
         {(()=>{
           if (action === "") {return <>
-            <Button variant={"default"} onClick={deleteTimer} className=" rounded-full bg-red-500 hover:bg-red-700"><FaTrashAlt /></Button>
+            <Menu open={open} deleteTimer={deleteTimer} muted={muted} toggleMuted={toggleMuted} />
             <Button variant={"default"} onClick={Go} className=" rounded-full ">Go</Button>
           </>}
           if (action === "running") {return (
@@ -248,4 +283,38 @@ const RemainingTimer = ({remainingTime}: {remainingTime: number}) => {
       <span>:</span>
       <Input className="rounded w-12 text-center border-none text-xl" readOnly value={`${sec}`.padStart(2, "0")} />
   </>)
+}
+
+type MenuProps = {
+  open: boolean,
+  deleteTimer: ()=>void,
+  toggleMuted: ()=>void,
+  muted: boolean,
+}
+
+const Menu = ({open, deleteTimer, toggleMuted, muted}: MenuProps) => {
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+        <Button variant={"default"}  className=" rounded-full bg-slate-500 hover:bg-slate-700"><IoSettingsOutline /></Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Timer Settings</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              Add a to-do
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={toggleMuted} className="flex justify-between">
+                <span className="">Muted</span> {muted ? <FaCheck /> : ""}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={(e)=>deleteTimer()} className="text-red-600 ">Delete</DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  )
 }
